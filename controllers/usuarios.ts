@@ -1,35 +1,87 @@
 import { Request, Response } from 'express'
+import User from '../models/User'
 
-export const getUsers = (req: Request, res: Response) => {
-    res.json({
-        msg: 'getUsers'
-    })
+export const getUsers = async (req: Request, res: Response) => {
+
+    try {
+        const users = await User.findAll()
+        res.json(users)
+    } catch (error) {
+        console.error(error)
+    }
 }
 
-export const getUser = (req: Request, res: Response) => {
+export const getUser = async (req: Request, res: Response) => {
     const { id } = req.params
-    res.json({
-        msg: 'getUser',
-        id
-    })
+    try {
+        const user = await User.findByPk(id)
+        if (user) {
+            res.json(user)
+        } else {
+            res.json({
+                error: 'User not found'
+            })
+        }
+
+    } catch (error) {
+        console.error(error)
+    }
 }
 
-export const postUser = (req: Request, res: Response) => {
+export const postUser = async (req: Request, res: Response) => {
     const body = req.body
-    res.json({
-        msg: 'postUser',
-        body
-    })
+
+
+
+    try {
+
+        const emailExist = await User.findOne({
+            where: {
+                email: body.email
+            }
+        })
+        if (emailExist) {
+            return res.status(400).json({
+                error: 'Email already exists'
+            })
+        }
+        const user = await User.create(body)
+        res.json(user)
+
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({
+            error: 'Something went wrong'
+        })
+
+    }
 }
 
-export const editUser = (req: Request, res: Response) => {
-    const { body } = req.body
+export const editUser = async (req: Request, res: Response) => {
+    const body = req.body
     const { id } = req.params
-    res.json({
-        msg: 'editUser',
-        id,
-        body
-    })
+
+    try {
+
+        const user = await User.findByPk(id)
+
+        if (!user) {
+            return res.status(404).json({
+                error: 'User not found'
+            })
+        }
+
+        await user.update(body)
+
+        res.json(user)
+
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({
+            error: 'Something went wrong'
+        })
+
+    }
 }
 
 export const deleteUser = (req: Request, res: Response) => {
