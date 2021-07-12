@@ -16,7 +16,6 @@ export const getUser = (req: Request, res: Response) => {
 
 export const postUser = (req: Request, res: Response) => {
     const body = req.body
-    console.log(body)
     res.json({
         msg: 'postUser',
         body

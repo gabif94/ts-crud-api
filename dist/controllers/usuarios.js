@@ -17,7 +17,6 @@ const getUser = (req, res) => {
 exports.getUser = getUser;
 const postUser = (req, res) => {
     const body = req.body;
-    console.log(body);
     res.json({
         msg: 'postUser',
         body
