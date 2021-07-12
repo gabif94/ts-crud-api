@@ -84,10 +84,30 @@ export const editUser = async (req: Request, res: Response) => {
     }
 }
 
-export const deleteUser = (req: Request, res: Response) => {
+export const deleteUser = async (req: Request, res: Response) => {
     const { id } = req.params
-    res.json({
-        msg: 'deleteUser',
-        id,
-    })
+
+    try {
+
+        const user = await User.findByPk(id)
+
+        if (!user) {
+            return res.status(404).json({
+                error: 'User not found'
+            })
+        }
+
+        await user.update({
+            state: false
+        })
+
+        res.json(user)
+
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({
+            error: 'Something went wrong'
+        })
+
+    }
 }

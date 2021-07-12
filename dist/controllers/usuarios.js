@@ -87,12 +87,26 @@ const editUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.editUser = editUser;
-const deleteUser = (req, res) => {
+const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    res.json({
-        msg: 'deleteUser',
-        id,
-    });
-};
+    try {
+        const user = yield User_1.default.findByPk(id);
+        if (!user) {
+            return res.status(404).json({
+                error: 'User not found'
+            });
+        }
+        yield user.update({
+            state: false
+        });
+        res.json(user);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({
+            error: 'Something went wrong'
+        });
+    }
+});
 exports.deleteUser = deleteUser;
 //# sourceMappingURL=usuarios.js.map
